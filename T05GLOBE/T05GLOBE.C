@@ -10,10 +10,10 @@
 #include <time.h>
 #include <windows.h>
 
+#include "GLOBE.H"
+
 /* Имя класса окна */
 #define WND_CLASS_NAME "My window class"
- /* Пи */
-DOUBLE Pi = 3.14159265358979323846; 
 /* Ссылка вперед */
 LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,
                                WPARAM wParam, LPARAM lParam );
@@ -100,23 +100,7 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ:
  *   (LRESULT) - в зависимости от сообщения.
  */
-VOID DrawGlobe( HDC hMemDC, INT Xc, INT Yc, DOUBLE Angle, INT R )
-{
-  INT i, j, N = 40, H = 20;
-  DOUBLE sinPhi, cosPhi, sinTheta, cosTheta, sinPhi1, cosPhi1, sinTheta1, cosTheta1;
-  POINT pts[4];
-  for (i = 0; i < H; i++)
-  {
-    sinTheta = sin(i * Pi / H);
-    cosTheta = cos(i * Pi / H);
-    sinTheta1 = sin((i + 1) * Pi / H);
-    cosTheta1 = cos((i + 1) * Pi / H);
-    SelectObject(hMemDC, GetStockObject(NULL_PEN));
-    SelectObject(hMemDC, GetStockObject(DC_BRUSH));
-    srand(30);
 
-  }
-}
 
 LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,
                                WPARAM wParam, LPARAM lParam )
@@ -125,7 +109,6 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,
   CREATESTRUCT *cs;
 //  POINT pt;
 //  SYSTEMTIME st;
-  INT cl = clock();
 //  CHAR Buf[100];
 //  HFONT hFnt;
   static BITMAP bm;
@@ -171,11 +154,9 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,
     SelectObject(hMemDC, GetStockObject(DC_BRUSH));
     SetDCBrushColor(hMemDC, RGB(200, 200, 200));
     Rectangle(hMemDC, 0, 0, w + 1, h + 1);
-
-    if (w > h)
-      DrawGlobe(hMemDC, w / 4, h / 4, cl * Pi / 3600, h / 4);
-    else
-      DrawGlobe(hMemDC, w / 4, h / 4, cl * Pi / 3600, w / 4);
+    
+    GlobeBild();
+    GlobeDraw(hMemDC, w, h);
 
     InvalidateRect(hWnd, NULL, TRUE);
     return 0;

@@ -179,9 +179,33 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\DEF.H"
+				>
+			</File>
+			<File
+				RelativePath=".\GLOBE.H"
+				>
+			</File>
+			<File
+				RelativePath=".\GLOBEDRAW.C"
+				>
+			</File>
+			<File
 				RelativePath=".\T05GLOBE.C"
 				>
 			</File>
+			<Filter
+				Name="Image"
+				>
+				<File
+					RelativePath=".\IMAGE.C"
+					>
+				</File>
+				<File
+					RelativePath=".\IMAGE.H"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
