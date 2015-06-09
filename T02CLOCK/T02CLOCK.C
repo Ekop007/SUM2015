@@ -106,6 +106,22 @@ VOID DrawArrow( INT h, INT w, INT bml, HDC hMemDC, DOUBLE angle ) /* Рисование с
   LineTo(hMemDC, w + x, h - y);
 }
 
+VOID DrawHand( HDC hDC, INT Xc, INT Yc, INT L, INT W, DOUBLE Angle)
+{
+  INT i;
+  FLOAT si = sin(Angle), co = cos(Angle);
+  POINT pnts[4] = 
+  {
+    {W, -W}, {0, 0}, {0, L}, {W, W}
+  }, pntdraw[sizeof(pnts) / sizeof(pnts[0])];
+  for(i = 0; i < sizeof(pnts) / sizeof(pnts[0]); i++)
+  {
+    pntdraw[i].x = Xc + pnts[i].x * co - pnts[i].y * si; 
+    pntdraw[i].y = Yc + pnts[i].y * co + pnts[i].x * si;
+  }
+  Polygon(hDC, pntdraw, sizeof(pnts) / sizeof(pnts[0]));
+}
+
 LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,
                                WPARAM wParam, LPARAM lParam )
 {
@@ -164,9 +180,12 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,
       hMemDCLogo, 0, 0, bm.bmWidth, bm.bmHeight, SRCCOPY);
     GetLocalTime(&st);
 
-    DrawArrow(h / 2, w / 2, bm.bmWidth / 2, hMemDC, st.wSecond * 6);
-    DrawArrow(h / 2, w / 2, bm.bmWidth / 2.5, hMemDC, st.wMinute * 6);
-    DrawArrow(h / 2, w / 2, bm.bmWidth / 4, hMemDC, (st.wHour % 12) * 6);
+    SetDCBrushColor(hMemDC, RGB(100, 150, 200));
+    DrawHand(hMemDC, w / 2, h / 2, bm.bmWidth / 3.5, bm.bmWidth / 10, (180 + (st.wHour % 12) * 30) * Pi / 180);
+    SetDCBrushColor(hMemDC, RGB(200, 55, 130));
+    DrawHand(hMemDC, w / 2, h / 2, bm.bmWidth / 2.5, bm.bmWidth / 15, (180 + st.wMinute * 6) * Pi / 180);
+    SetDCBrushColor(hMemDC, RGB(200, 100, 10));
+    DrawHand(hMemDC, w / 2, h / 2, bm.bmWidth / 2, bm.bmWidth / 20, (180 + st.wSecond * 6) * Pi / 180);
 
     hFnt = CreateFont(30, 0, 0, 0, FW_BOLD, TRUE, FALSE,
       FALSE, RUSSIAN_CHARSET, OUT_DEFAULT_PRECIS,
@@ -178,7 +197,7 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,
     SetBkColor(hMemDC, RGB(255, 255, 0));
     SetBkMode(hMemDC, TRANSPARENT);
     
-    TextOut(hMemDC, 5 * w / 12, 7 * h / 9, Buf,
+    TextOut(hMemDC, 5 * w / 12, 11 * h / 12, Buf,
       sprintf(Buf, "%02d:%02d:%02d (%02d.%02d.%d)",
         st.wHour, st.wMinute, st.wSecond,
         st.wDay, st.wMonth, st.wYear));
@@ -195,6 +214,10 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,
           "Exit", MB_YESNO | MB_ICONQUESTION) == IDNO)
       return 0;
     break;
+  
+ /* case WM_KEYDOWN
+    if ()
+  */
 
   case WM_LBUTTONDOWN:
     SetCapture(hWnd);

@@ -11,8 +11,8 @@
 
 VEC Grid[N][M];
 BYTE *Pic;
-INT W, H;
-
+INT W, H, k = 0;
+IMAGE Img;
 
 /* Функция поворота точки вокруг оси X */
 VEC RotateX( VEC P, DOUBLE AngleDegree )
@@ -77,12 +77,10 @@ VOID DrawQuad( HDC hDC, VEC P0, VEC P1, VEC P2, VEC P3, INT W, INT H )
 VOID GlobeDraw( HDC hDC, INT W, INT H )
 {
   INT i, j, x, y;
-  IMAGE Img;
   SelectObject(hDC, GetStockObject(NULL_PEN));
-  SelectObject(hDC, GetStockObject(DC_BRUSH));
-  if (Img.hBm == NULL)
-    if (ImageLoad(&Img, "globe1.bmp") == FALSE)
-      return;
+  SelectObject(hDC, GetStockObject(DC_BRUSH)); 
+  if (ImageLoad(&Img, "globe1.bmp") == FALSE)
+    return;
   for (i = 0; i <= N; i++)
   {
     for (j = 0; j <= M; j++)

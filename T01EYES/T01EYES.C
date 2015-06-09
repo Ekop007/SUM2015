@@ -26,9 +26,11 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,
  *   0 - при успехе.
  */
 
-void Eye( HDC hDC, int x, int y, int r, int r1 )
+void Eye( HDC hDC, int x, int y, int r, int r1, int h, int w1, int w )
 {
-
+  INT x1, k, y1, l;
+  if (x1 < w / 2)
+    x1 = 2 * x / w;  
 }
 
 INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
@@ -104,7 +106,7 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,
   HDC hDC;
   static INT w, h;
   POINT pt;
-  INT r;
+  INT r, r1;
   switch (Msg)
   {
   case WM_CREATE:
@@ -116,13 +118,17 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,
     return 0;
   case WM_TIMER:
     hDC = GetDC(hWnd);
-    r = (INT)sqrt((w * w / 48) + (h * h / 12));
+    if( w / 4 < h / 2)
+      r = (w / 4) - (w / 30);
+    else
+      r = (h / 2) - (h / 15);
     Ellipse(hDC, w / 4 - r, h / 2 - r, w / 4 + r , h / 2 + r);
     Ellipse(hDC, 3 * w / 4 - r, h / 2 - r, 3 * w / 4 + r , h / 2 + r);
     GetCursorPos(&pt);
     ScreenToClient(hWnd, &pt);
-/*    Ellipse(hDC, (w / 4) - 20, h / 2 + 20, (w / 4) + 20, h / 2 - 20);
-    Ellipse(hDC, (3 * w / 4) - 20, h / 2 + 20, (3 * w / 4) + 20, h / 2 - 20);  */
+    r1 = r / 6;
+    Eye(hDC, pt.x, pt.y, r, r1, h / 2, w / 4, w);
+    Eye(hDC, pt.x, pt.y, r, r1, h / 2, 3 * w / 4, w);
     ReleaseDC(hWnd, hDC);
     return 0;
   case WM_DESTROY:
