@@ -186,18 +186,58 @@
 				RelativePath=".\MAIN.C"
 				>
 			</File>
-			<File
-				RelativePath=".\OBJ3D.C"
+			<Filter
+				Name="Units"
 				>
-			</File>
-			<File
-				RelativePath=".\OBJ3D.H"
+				<File
+					RelativePath=".\UBALL.C"
+					>
+				</File>
+				<File
+					RelativePath=".\UCAW.C"
+					>
+				</File>
+				<File
+					RelativePath=".\UCONTRL.C"
+					>
+				</File>
+				<File
+					RelativePath=".\UNITS.H"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="3D Object Support"
 				>
-			</File>
-			<File
-				RelativePath=".\VEC.H"
+				<File
+					RelativePath=".\RENDER.C"
+					>
+				</File>
+				<File
+					RelativePath=".\RENDER.H"
+					>
+				</File>
+				<File
+					RelativePath=".\VEC.H"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Animation System"
 				>
-			</File>
+				<File
+					RelativePath=".\ANIM.C"
+					>
+				</File>
+				<File
+					RelativePath=".\ANIM.H"
+					>
+				</File>
+				<File
+					RelativePath=".\UNIT.C"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"

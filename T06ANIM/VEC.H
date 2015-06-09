@@ -1,3 +1,8 @@
+/* FILENAME: VEC.H
+ * PROGRAMMER: AK1
+ * PURPOSE: Vectors and matrix system declaration module.
+ * LAST UPDATE: 08.06.2015
+ */
 
 #ifndef _VEC_H_
 #define _VEC_H_
@@ -261,14 +266,14 @@ __inline DBL VecDotVec( VEC A, VEC B )
   return A.X * B.X + A.Y * B.Y + A.Z * B.Z;
 }
 
-__inline VEC PoINTTransform( VEC V, MATR M )
+__inline VEC PointTransform( VEC V, MATR M )
 {
   return VecSet(
     V.X * M.A[0][0] + V.Y * M.A[1][0] + V.Z * M.A[2][0] + M.A[3][0],
     V.X * M.A[0][1] + V.Y * M.A[1][1] + V.Z * M.A[2][1] + M.A[3][1],
     V.X * M.A[0][2] + V.Y * M.A[1][2] + V.Z * M.A[2][2] + M.A[3][2]);
 }
-__inline VEC VectorTransform( VEC V, MATR M )
+__inline VEC VecMulMatr( VEC V, MATR M )
 {
   return VecSet(
     V.X * M.A[0][0] + V.Y * M.A[1][0] + V.Z * M.A[2][0],
@@ -280,13 +285,13 @@ __inline VEC NormVec( VEC N, MATR M )
 {
   VEC N1;
   MATR Q = MatrTranspose(MatrInverse(M));
-  N1 = VectorTransform(N, Q);
+  N1 = VecMulMatr(N, Q);
   return N1;
 }
 
-__inline VEC VecRotateZ( VEC V, DBL AngleInDegree )
+__inline MATR MatrRotateZ( MATR M, DBL AngleInDegree )
 {
-  DBL sine, cosine, tmp;
+  DBL sine, cosine;
   /* Multiplyer degree to radian constant */
    long double MultiplierDegree2Radian = DEGREE2RADIANL1;
   __asm {
@@ -299,11 +304,11 @@ __inline VEC VecRotateZ( VEC V, DBL AngleInDegree )
     fstp cosine /* cos -> cosine */
     fstp sine   /* sin -> sine */
   }
-  tmp = V.X * cosine - V.Y * sine;
-  V.Y = V.X * sine + V.Y * cosine;
-  V.X = tmp;
-  return V;
-} /* End of 'VecRotateZ' function */
+  M.A[0][0] =  M.A[2][2] = cosine;
+  M.A[2][0] = sine;
+  M.A[0][2] = -sine;
+  return M;
+} /* End of 'MatrRotateZ' function */
 
 __inline MATR MatrRotateY( DBL AngleInDegree )
 {
@@ -344,9 +349,9 @@ __inline MATR MatrRotateX( DBL AngleInDegree )
     fstp cosine /* cos -> cosine */
     fstp sine   /* sin -> sine */
   }
-  M.A[1][1] =  M.A[2][2] = cosine;
-  M.A[1][2] = sine;
-  M.A[2][1] = -sine;
+  M.A[1][1] =  M.A[0][0] = cosine;
+  M.A[0][1] = sine;
+  M.A[1][0] = -sine;
   return M;
 } /* End of 'VecRotateX' function */
 
