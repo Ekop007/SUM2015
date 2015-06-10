@@ -194,11 +194,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\UCAW.C"
+					RelativePath=".\UCONTRL.C"
 					>
 				</File>
 				<File
-					RelativePath=".\UCONTRL.C"
+					RelativePath=".\UCOW.C"
 					>
 				</File>
 				<File
@@ -209,14 +209,6 @@
 			<Filter
 				Name="3D Object Support"
 				>
-				<File
-					RelativePath=".\RENDER.C"
-					>
-				</File>
-				<File
-					RelativePath=".\RENDER.H"
-					>
-				</File>
 				<File
 					RelativePath=".\VEC.H"
 					>
@@ -237,6 +229,18 @@
 					RelativePath=".\UNIT.C"
 					>
 				</File>
+				<Filter
+					Name="Rendering"
+					>
+					<File
+						RelativePath=".\RENDER.C"
+						>
+					</File>
+					<File
+						RelativePath=".\RENDER.H"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter

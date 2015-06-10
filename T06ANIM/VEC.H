@@ -11,14 +11,18 @@
 
 #include "def.h"
 
-#pragma warning(disable:4244)
-
 #define PI 3.14159265358979323846
 #define D2R(A) ((A) * PI / 180.0)
 #define DEGREE2RADIANL1 0.01745329251994329576L
-     
-/* базовый вещественный тип */
-typedef double DBL;
+#define AK1_UNIT_MATR \
+{                     \
+  {                   \
+    {1, 0, 0, 0},     \
+    {0, 1, 0, 0},     \
+    {0, 0, 1, 0},     \
+    {0, 0, 0, 1}      \
+  }                   \
+}
 
 /* тип для вектора в простанстве */
 typedef struct tagVEC
@@ -304,9 +308,9 @@ __inline MATR MatrRotateZ( MATR M, DBL AngleInDegree )
     fstp cosine /* cos -> cosine */
     fstp sine   /* sin -> sine */
   }
-  M.A[0][0] =  M.A[2][2] = cosine;
-  M.A[2][0] = sine;
-  M.A[0][2] = -sine;
+  M.A[0][0] =  M.A[1][1] = cosine;
+  M.A[0][1] = sine;
+  M.A[1][0] = -sine;
   return M;
 } /* End of 'MatrRotateZ' function */
 
@@ -327,9 +331,9 @@ __inline MATR MatrRotateY( DBL AngleInDegree )
     fstp cosine /* cos -> cosine */
     fstp sine   /* sin -> sine */
   }
-  M.A[0][0] =  M.A[3][3] = cosine;
-  M.A[3][0] = sine;
-  M.A[0][3] = -sine;
+  M.A[0][0] =  M.A[2][2] = cosine;
+  M.A[2][0] = sine;
+  M.A[0][2] = -sine;
   return M;
 } /* End of 'VecRotateY' function */
 
@@ -407,5 +411,36 @@ __inline MATR MatrRotate( DBL AngleDegree, DBL X, DBL Y, DBL Z )
   return M;
 }
 
+__inline MATR MatrView( VEC Loc, VEC At, VEC Up1 )
+{
+  VEC
+    Dir = VecNormalize(VecSubVec(At, Loc)),
+    Right = VecNormalize(VecCrossVec(Dir, Up1)),
+    Up = VecNormalize(VecCrossVec(Right, Dir));
+  MATR M =
+  {
+    {
+      {               Right.X,                Up.X,              -Dir.X, 0},
+      {               Right.Y,                Up.Y,              -Dir.Y, 0},
+      {               Right.Z,                Up.Z,              -Dir.X, 0},
+      {-VecDotVec(Loc, Right), -VecDotVec(Loc, Up), VecDotVec(Loc, Dir), 1}
+    }
+  };
+  return M;
+} /* End of 'MatrView' function */
+
+__inline MATR MatrFrustum( DBL Left, DBL Right, DBL Bottom, DBL Top, DBL Near, DBL Far )
+{
+  MATR M =
+  {
+    {
+      {      2 * Near / (Right - Left),                               0,                              0,  0},
+      {                              0,       2 * Near / (Top - Bottom),                              0,  0},
+      {(Right + Left) / (Right - Left), (Top + Bottom) / (Top - Bottom),   -(Far + Near) / (Far - Near), -1},
+      {                              0,                               0, -2 * Near * Far / (Far - Near),  0}
+    }
+  };
+  return M;
+} /* End of 'MatrFrust' function */
 
 #endif

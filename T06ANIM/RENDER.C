@@ -14,7 +14,8 @@
 MATR
   AK1_RndMatrWorld = AK1_UNIT_MATR,
   AK1_RndMatrView = AK1_UNIT_MATR,
-  AK1_RndMatrWorldView = AK1_UNIT_MATR;
+  AK1_RndMatrProj = AK1_UNIT_MATR,
+  AK1_RndMatrWorldViewProj = AK1_UNIT_MATR;
 
 /* Параметры проецирования */
 DBL
@@ -31,16 +32,12 @@ DBL
 POINT AK1_RndWorldToScreen( VEC P )
 {
   POINT Ps;
-  VEC Pp;
 
   /* преобразование СК */
-  P = VecMulMatr(P, AK1_RndMatrWorldView);
+  P = PointTransform(P, AK1_RndMatrWorldViewProj);
 
-  Pp.X = P.X * AK1_RndProjDist / P.Z;
-  Pp.Y = P.Y * AK1_RndProjDist / P.Z;
-
-  Ps.x = AK1_Anim.W / 2 + Pp.X * AK1_Anim.W / AK1_RndWp;
-  Ps.y = AK1_Anim.H / 2 - Pp.Y * AK1_Anim.H / AK1_RndHp;
+  Ps.x = (P.X + 1) / 2 * AK1_Anim.W + AK1_Anim.PosX;
+  Ps.y = (1 - P.Y) / 2 * AK1_Anim.H + AK1_Anim.PosY;
 
   return Ps;
 } /* End of 'VG4_RndWorldToScreen' function */
@@ -55,7 +52,7 @@ POINT AK1_RndWorldToScreen( VEC P )
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ:
  *   (BOOL) TRUE при успехе, FALSE иначе.
  */
-BOOL AK1_RndGObjLoad( vg4GOBJ *GObj, CHAR *FileName )
+BOOL AK1_RndGObjLoad( ak1GOBJ *GObj, CHAR *FileName )
 {
   FILE *F;
   INT nv = 0, nf = 0;
@@ -123,19 +120,18 @@ BOOL AK1_RndGObjLoad( vg4GOBJ *GObj, CHAR *FileName )
  *       vg4GOBJ *GObj;
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ: Нет.
  */
-VOID AK1_RndGObjDraw( vg4GOBJ *GObj )
+VOID AK1_RndGObjDraw( ak1GOBJ *GObj )
 {
   INT i;
   POINT *pnts;
-
+    
   if ((pnts = malloc(sizeof(POINT) * GObj->NumOfV)) == NULL)
     return;
-
   /* проецируем все точки */
-  AK1_RndMatrWorldView = MatrMulMatr(AK1_RndMatrWorld, AK1_RndMatrView);
+  AK1_RndMatrWorldViewProj = MatrMulMatr(MatrMulMatr(AK1_RndMatrWorld, AK1_RndMatrView), AK1_RndMatrProj);
   for (i = 0; i < GObj->NumOfV; i++)
     pnts[i] = AK1_RndWorldToScreen(GObj->V[i]);
-
+  
   /* рисуем треугольники */
   for (i = 0; i < GObj->NumOfF; i++)
   {
@@ -159,10 +155,10 @@ VOID AK1_RndGObjDraw( vg4GOBJ *GObj )
  *       vg4GOBJ *GObj;
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ: Нет.
  */
-VOID AK1_RndGObjFree( vg4GOBJ *GObj )
+VOID AK1_RndGObjFree( ak1GOBJ *GObj )
 {
   free(GObj->V);
-  memset(GObj, 0, sizeof(vg4GOBJ));
+  memset(GObj, 0, sizeof(ak1GOBJ));
 } /* End of 'VG4_RndGObjFree' function */
 
 /* END OF 'RENDER.C' FILE */

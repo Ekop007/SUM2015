@@ -18,7 +18,7 @@ typedef struct tagak1UNIT_COW
 {
   AK1_UNIT_BASE_FIELDS;
 
-  ak1GOBJ Model     /* Млдель корова */
+  ak1GOBJ Model;     /* Млдель корова */
 } ak1UNIT_COW;
 
 /* Функция инициализации объекта анимации.
@@ -29,12 +29,12 @@ typedef struct tagak1UNIT_COW
  *       ak1ANIM *Ani;
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ: Нет.
  */
+
 static VOID AK1_AnimCowInit( ak1UNIT_COW *Uni, ak1ANIM *Ani )
 {
-  Uni->Pos = VecSet(Ani->W / 2, Ani->H / 2, 0);
-  AK1_RndGObjLoad(("cow.object"));
-  Ani->PosX = Ani->W / 2;
-  Ani->PosY = Ani->H / 2;
+  AK1_RndGObjLoad(&Uni->Model, "cow.object");
+  Ani->PosX = 0;
+  Ani->PosY = 0;
 } /* End of 'ak1_AnimUnitInit' function */
 
 /* Функция деинициализации объекта анимации.
@@ -47,6 +47,7 @@ static VOID AK1_AnimCowInit( ak1UNIT_COW *Uni, ak1ANIM *Ani )
  */
 static VOID AK1_AnimCowClose( ak1UNIT_COW *Uni, ak1ANIM *Ani )
 {
+  AK1_RndGObjFree(&Uni->Model);
 } /* End of 'ak1_AnimUnitClose' function */
 
 /* Функция обновления межкадровых параметров объекта анимации.
@@ -59,16 +60,24 @@ static VOID AK1_AnimCowClose( ak1UNIT_COW *Uni, ak1ANIM *Ani )
  */
 static VOID AK1_AnimCowResponse( ak1UNIT_COW *Uni, ak1ANIM *Ani )
 {
-  if (GetAsyncKeyState(VK_ESCAPE) & 0x8000)
+  if (Ani->Keys[VK_ESCAPE])
     AK1_AnimDoExit();
-  if (Ani->JX > -0.00002)
-    Ani->PosX += 10;
-  if (Ani->JX < -0.)
-    Ani->PosX -= 10;
-  if (Ani->JY > -0.00001)
-    Ani->PosY += 10;
+  if (Ani->JX > 0.0)
+    Ani->PosX += 10 * (Ani->JX + 0.00002) * !Ani->IsPause;
+  if (Ani->JX < -0.00003)
+    Ani->PosX += 10 * (Ani->JX + 0.00002) * !Ani->IsPause;
+  if (Ani->JY > 0.0)
+    Ani->PosY += 10 * (Ani->JY + 0.00002) * !Ani->IsPause;
   if (Ani->JY < -0.00002)
-    Ani->PosY -= 10;
+    Ani->PosY += 10 * (Ani->JY + 0.00002) * !Ani->IsPause;
+  if (Ani->JZ < -0.00002)
+    Ani->AngleX += 20 * Ani->JZ * !Ani->IsPause;
+  if (Ani->JZ > 0.0)
+    Ani->AngleX += 20 * Ani->JZ * !Ani->IsPause;
+  if (Ani->JR < -0.00002)
+    Ani->AngleY += 20 * Ani->JR * !Ani->IsPause;
+  if (Ani->JR > 0.00002)
+    Ani->AngleY += 20 * Ani->JR * !Ani->IsPause;
   if (Ani->JButsClick[0])
     AK1_AnimFlipFullScreen();
   if (Ani->JButsClick[4])
@@ -87,7 +96,18 @@ static VOID AK1_AnimCowResponse( ak1UNIT_COW *Uni, ak1ANIM *Ani )
  */
 static VOID AK1_AnimCowRender( ak1UNIT_COW *Uni, ak1ANIM *Ani )
 {
-  ObjDraw(Ani->hDC, Ani->W, Ani->H, Ani->PosX, Ani->PosY);
+  int i, l = -1;
+  DBL X1 = Ani->PosX;
+  AK1_RndMatrWorld = MatrMulMatr(MatrMulMatr(MatrRotateX(Ani->AngleX), MatrRotateY(Ani->AngleY)), MatrScale(10, 10, 10));
+  AK1_RndMatrView = MatrView(VecSet(8, 8, 8), VecSet(0, 0, 0), VecSet(0, 1, 0));
+  SetDCPenColor(Ani->hDC, RGB(255, 255, 255));
+//  AK1_RndGObjDraw(&Uni->Model);
+  for (i = 0; i < 3; i++)
+  {
+    Ani->PosX = X1 + (i + l) * 600;
+    AK1_RndGObjDraw(&Uni->Model);
+  }
+  Ani->PosX = X1;
 } /* End of 'ak1_AnimUnitRender' function */
 
 /* Функция создания объекта анимации "мяч".

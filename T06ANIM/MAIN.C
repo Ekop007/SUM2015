@@ -80,10 +80,10 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
   /*** Добавление объектов ***/
   AK1_AnimAddUnit(AK1_UnitControlCreate());
 
-  for (i = 0; i < 100; i++)
-    AK1_AnimAddUnit(AK1_UnitBallCreate());
+ /* for (i = 0; i < 100; i++)
+    AK1_AnimAddUnit(AK1_UnitBallCreate());*/
 
-  AK1_AnimAddUnit(AK1_UnitCowCreate());
+/*  AK1_AnimAddUnit(AK1_UnitCowCreate()); */
 
   /* Запуск цикла обработки сообщений */
   while (GetMessage(&msg, NULL, 0, 0))
@@ -121,6 +121,7 @@ LRESULT CALLBACK MainWindowFunc( HWND hWnd, UINT Msg,
   case WM_CREATE:
     SetTimer(hWnd, 30, 1, NULL);
     AK1_AnimInit(hWnd);
+    AK1_AnimAddUnit(AK1_UnitCowCreate());
     return 0;
   case WM_SIZE:
     AK1_AnimResize(LOWORD(lParam), HIWORD(lParam));

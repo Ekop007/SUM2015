@@ -10,6 +10,7 @@
 #include <windows.h>
 /* базовый вещественный тип */
 typedef double DBL;
+
 typedef float FLT;
 
 #endif

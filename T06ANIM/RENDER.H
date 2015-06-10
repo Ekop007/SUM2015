@@ -8,7 +8,8 @@
 #define __RENDER_H_
 
 #include "vec.h"
-
+ 
+ 
 /* Тип представления объекта - набор вершин и треугольников */
 typedef struct tagak1GOBJ
 {
@@ -22,15 +23,7 @@ typedef struct tagak1GOBJ
 extern MATR
   AK1_RndMatrWorld,
   AK1_RndMatrView,
-  AK1_UNIT_MATR =
-{
-    {
-      {1, 0, 0, 0},
-      {0, 1, 0, 0},
-      {0, 0, 1, 0},
-      {0, 0, 0, 1}
-    }
-  };
+  AK1_RndMatrProj;
 
 /* Параметры проецирования */
 extern DBL

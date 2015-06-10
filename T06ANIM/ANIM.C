@@ -4,7 +4,7 @@
  * LAST UPDATE: 08.06.2015
  */
 #include <stdio.h>
-
+#include "render.h"
 #include "anim.h"
 
 #include <mmsystem.h>
@@ -29,6 +29,7 @@ static INT64
 static INT
   FrameCounter; /* счетчик кадров */
 
+ak1ANIM AK1_Anim;
 /* Функция установки паузы анимации.
  * АРГУМЕНТЫ:
  *   - флаг паузы:
@@ -61,6 +62,8 @@ VOID AK1_AnimInit( HWND hWnd )
   SelectObject(AK1_Anim.hDC, AK1_Anim.hBmFrame);
   AK1_Anim.W = 30;
   AK1_Anim.H = 30;
+  AK1_Anim.AngleX = 0;
+  AK1_Anim.AngleY = 0;
   AK1_Anim.NumOfUnits = 0;
   ReleaseDC(hWnd, hDC);
 
@@ -119,7 +122,11 @@ VOID AK1_AnimResize( INT W, INT H )
   /* Сохранение размера */
   AK1_Anim.W = W;
   AK1_Anim.H = H;
-
+  AK1_RndMatrProj = MatrFrustum(-W / 2, W / 2, -H / 2, H / 2, AK1_RndProjDist, 800);
+  if (W > H)
+    AK1_RndWp = (DBL)W / H * 3, AK1_RndHp = 3;
+  else
+    AK1_RndHp = (DBL)H / W * 3, AK1_RndWp = 3;
   ReleaseDC(AK1_Anim.hWnd, hDC);
 } /* End of 'AK1_AnimResize' function */
 

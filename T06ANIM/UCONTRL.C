@@ -59,10 +59,6 @@ static VOID AK1_AnimUnitResponse( ak1UNIT_CTRL *Uni, ak1ANIM *Ani )
 {
   if (Ani->Keys[VK_ESCAPE])
     AK1_AnimDoExit();
-  if (Ani->KeysClick['F'])
-    AK1_AnimFlipFullScreen();
-  if (Ani->KeysClick['P'])
-    AK1_AnimSetPause(!Ani->IsPause);
 } /* End of 'AK1_AnimUnitResponse' function */
 
 /* Функция построения объекта анимации.

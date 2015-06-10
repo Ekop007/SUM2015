@@ -52,6 +52,7 @@ typedef struct
     JPOV;            /* Переключатель POV - 0..8 */
   DBL
     JX, JY, JZ, JR, JU, JV; /* Оси джойстика (-1.0 .. 1.0*/
+  DBL AngleX, AngleY;
 
 } ak1ANIM;
 
@@ -84,7 +85,6 @@ struct tagak1UNIT
 {
   AK1_UNIT_BASE_FIELDS;
 };
-
 
 extern ak1ANIM AK1_Anim;
 
