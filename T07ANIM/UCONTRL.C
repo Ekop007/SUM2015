@@ -72,28 +72,17 @@ static VOID AK1_AnimUnitResponse( ak1UNIT_CTRL *Uni, ak1ANIM *Ani )
 static VOID AK1_AnimUnitRender( ak1UNIT_CTRL *Uni, ak1ANIM *Ani )
 {
   HFONT hFntOld = SelectObject(Ani->hDC, Uni->hFnt);
-  RECT rc;
+  static DBL count = 30;
   static CHAR Buf[1000];
 
-  SetTextColor(Ani->hDC, RGB(255, 255, 255));
-  SetBkMode(Ani->hDC, TRANSPARENT);
+  count += Ani->GlobalDeltaTime;
+  if (count > 1)
+  {
+    count = 0;
+    sprintf(Buf, "FPS: %.3f", Ani->FPS);
+    SetWindowText(Ani->hWnd, Buf);
+  }
 
-  rc.left = 0;
-  rc.top = 0;
-  rc.right = Ani->W;
-  rc.bottom = Ani->H;
-  DrawText(Ani->hDC, Buf,
-    sprintf(Buf,
-      "FPS: %.3f\n"
-      "J: %i %i %i, POV:%i\n"
-      "%.5f %.5f %.5f %.5f %.5f %.5f",
-      Ani->FPS,
-      Ani->JButs[0], Ani->JButs[1], Ani->JButs[2], Ani->JPOV,
-      Ani->JX, Ani->JY, Ani->JZ, Ani->JR, Ani->JU, Ani->JV),
-    &rc,
-    DT_TOP | DT_LEFT);
-
-  SelectObject(Ani->hDC, hFntOld);
 } /* End of 'AK1_AnimUnitRender' function */
 
 /* Функция создания объекта анимации "управление".

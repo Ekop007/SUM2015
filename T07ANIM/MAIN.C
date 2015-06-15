@@ -79,10 +79,6 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
   /*** Добавление объектов ***/
   AK1_AnimAddUnit(AK1_UnitControlCreate());
-
- /* for (i = 0; i < 100; i++)
-    AK1_AnimAddUnit(AK1_UnitBallCreate());*/
-
   AK1_AnimAddUnit(AK1_UnitCowCreate());
 
   /* Запуск цикла обработки сообщений */

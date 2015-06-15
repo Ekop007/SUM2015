@@ -1,7 +1,7 @@
 /* FILENAME: SHADERS.C
- * PROGRAMMER: VG4
+ * PROGRAMMER: AK1
  * PURPOSE: Shader support module.
- * LAST UPDATE: 11.06.2015
+ * LAST UPDATE: 15.06.2015
  */
 
 #include <stdio.h>
@@ -29,7 +29,7 @@ static VOID AK1_SaveLog( CHAR *Text )
 
 /* Функция загрузки текстового файла в память.
  * АРНУМЕНТЫ:
- *   - имя файла:
+ *   - имея файла:
  *       CHAR *FileName;
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ:
  *   (CHAR *) загруженный текст.
@@ -39,23 +39,27 @@ static CHAR * AK1_TextLoad( CHAR *FileName )
   FILE *F;
   CHAR *mem = NULL;
 
+  /* Открываем текстовый файл */
   if ((F = fopen(FileName, "r")) != NULL)
   {
     LONG len;
 
+    /* измеряем длину файла */
     fseek(F, 0, SEEK_END);
     len = ftell(F);
 
+    /* выделяем память под текст */
     if ((mem = malloc(len + 1)) != NULL)
     {
       fseek(F, 0, SEEK_SET);
+      /* загружаем файл в память */
       len = fread(mem, 1, len, F);
       mem[len] = 0;
     }
     fclose(F);
   }
   return mem;
-} /* End of 'AK1_TextLoad' function */
+} /* End of 'AK1_ShaderLoad' function */
 
 /* Функция загрузки шейдеров для одной программы.
  * АРНУМЕНТЫ:

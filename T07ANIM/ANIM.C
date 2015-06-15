@@ -90,6 +90,14 @@ BOOL AK1_AnimInit( HWND hWnd )
     return FALSE;
   }
 
+  glActiveTexture(GL_TEXTURE0);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+  glActiveTexture(GL_TEXTURE1);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
   /* Инициализация ввода */
   GetCursorPos(&pt);
   ScreenToClient(AK1_Anim.hWnd, &pt);
@@ -187,6 +195,16 @@ VOID AK1_AnimRender( VOID )
   }
   AK1_Anim.Time = (DBL)(li.QuadPart - TimePause - TimeStart) / TimeFreq;
 
+  /* вычисление FPS */
+  if (li.QuadPart - TimeFPS > TimeFreq)
+  {
+    AK1_Anim.FPS = FrameCounter / ((DBL)(li.QuadPart - TimeFPS) / TimeFreq);
+    TimeFPS = li.QuadPart;
+    FrameCounter = 0;
+  }
+
+  TimeOld = li.QuadPart;
+
    /*** Обновление ввода ***/
 
   /* Клавиатура */
@@ -254,33 +272,20 @@ VOID AK1_AnimRender( VOID )
       }
     }
   }
-  
-  /* вычисляем FPS */
-  if (li.QuadPart - TimeFPS > TimeFreq)
-  {
-    static CHAR Buf[100];
 
-    sprintf(Buf, "FPS: %.5f", AK1_Anim.FPS);
-    SetWindowText(AK1_Anim.hWnd, Buf);
-
-    AK1_Anim.FPS = FrameCounter / ((DBL)(li.QuadPart - TimeFPS) / TimeFreq);
-    TimeFPS = li.QuadPart;
-    FrameCounter = 0;
-  }
-
-  /* время "прошлого" кадра */
-  TimeOld = li.QuadPart;
+  for (i = 0; i < AK1_Anim.NumOfUnits; i++)
+    AK1_Anim.Units[i]->Response(AK1_Anim.Units[i], &AK1_Anim);
 
   glClearColor(0.3, 0.5, 0.7, 1);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glClearDepth(1);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   for (i = 0; i < AK1_Anim.NumOfUnits; i++)
   {
-    static DBL time = 5;
+    static DBL time = 1;
 
     time += AK1_Anim.GlobalDeltaTime;
-    if (time > 5)
+    if (time > 1)
     {
       time = 0;
       AK1_ShaderFree(AK1_RndProg);

@@ -18,7 +18,10 @@ typedef struct tagak1UNIT_COW
 {
   AK1_UNIT_BASE_FIELDS;
 
-  ak1GOBJ Model;     /* Млдель корова */
+  ak1GEOM Model; 
+  ak1GEOM Geom; 
+  ak1PRIM Pr;
+  INT TextId;     /* Модель корова */
 } ak1UNIT_COW;
 
 /* Функция инициализации объекта анимации.
@@ -32,9 +35,30 @@ typedef struct tagak1UNIT_COW
 
 static VOID AK1_AnimCowInit( ak1UNIT_COW *Uni, ak1ANIM *Ani )
 {
-  AK1_RndGObjLoad(&Uni->Model, "cow.object");
-  Ani->PosX = 0;
-  Ani->PosY = 0;
+  ak1VERTEX V[]= 
+  {
+    {{0, 0, 0}, {0, 0}, {0, 0, 1}, {1, 1, 1, 1}},
+    {{1, 0, 0}, {5, 0}, {0, 0, 1}, {1, 0, 1, 1}},
+    {{0, 1, 0}, {0, 5}, {0, 0, 1}, {1, 1, 0, 1}},
+    {{1, 1, 0}, {5, 5}, {0, 0, 1}, {1, 1, 0, 1}},
+  };
+  INT I[] = {0, 1, 2, 2, 1, 3};
+  BYTE txt[2][2][3] =
+  {
+    {{255, 255, 255}, {0, 0, 0}},
+    {{0, 0, 0}, {255, 255, 255}}
+  };
+
+ 
+  Uni->TextId = AK1_TextureLoad("M.BMP");
+
+  AK1_PrimCreate(&Uni->Pr, AK1_PRIM_TRIMESH, 4, 6, V, I);
+
+  AK1_RndPrimMatrConvert = MatrMulMatr(MatrScale(5, 5, 5), MatrRotateX(-90));
+  
+
+  AK1_RndPrimMatrConvert = MatrMulMatr(MatrScale(3, 3, 3), MatrRotateX(-90));
+  AK1_GeomLoad(&Uni->Geom, "X6.G3D");
 } /* End of 'ak1_AnimUnitInit' function */
 
 /* Функция деинициализации объекта анимации.
@@ -47,7 +71,9 @@ static VOID AK1_AnimCowInit( ak1UNIT_COW *Uni, ak1ANIM *Ani )
  */
 static VOID AK1_AnimCowClose( ak1UNIT_COW *Uni, ak1ANIM *Ani )
 {
-  AK1_RndGObjFree(&Uni->Model);
+  AK1_GeomFree(&Uni->Model);
+  AK1_GeomFree(&Uni->Geom);
+  AK1_PrimFree(&Uni->Pr);
 } /* End of 'ak1_AnimUnitClose' function */
 
 /* Функция обновления межкадровых параметров объекта анимации.
@@ -108,18 +134,17 @@ static VOID AK1_AnimCowRender( ak1UNIT_COW *Uni, ak1ANIM *Ani )
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   glEnable(GL_DEPTH_TEST);
 
-  for (i = 0; i < 1; i++)
-    for (j = 0; j < 1; j++)
-    {
-      AK1_RndMatrWorld =
-        MatrMulMatr(MatrMulMatr(MatrMulMatr(
-          MatrTranslate(Ani->PosX, Ani->PosY, 0),
-          MatrScale(0.1, 0.1, 0.1)),
-          MatrRotateY(Ani->AngleY)),
-          MatrTranslate(j * 1.30, 0, i * 1.30 + 100 * Ani->JZ));
-      glColor3d(i & 1, j & 1, 1 - ((i & 1) + (j & 1)) / 2);
-      AK1_RndGObjDraw(&Uni->Model);
-    }
+  AK1_RndMatrWorld =
+    MatrMulMatr(MatrMulMatr(MatrMulMatr(
+      MatrTranslate(Ani->PosX, -Ani->PosY, 0),
+      MatrScale(0.1, 0.1, 0.1)),
+      MatrRotateY(Ani->AngleY)),
+      MatrRotateX(Ani->AngleX));
+  AK1_GeomDraw(&Uni->Geom);
+
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, Uni->TextId);
+  AK1_PrimDraw(&Uni->Pr);
 } /* End of 'ak1_AnimUnitRender' function */
 
 /* Функция создания объекта анимации "мяч".
