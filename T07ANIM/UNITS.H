@@ -17,7 +17,7 @@
  */
 ak1UNIT * AK1_UnitBallCreate( VOID );
 
-ak1UNIT * AK1_UnitCowCreate( VOID );
+ak1UNIT * AK1_UnitModelCreate( VOID );
 
 ak1UNIT * AK1_UnitControlCreate( VOID );
 

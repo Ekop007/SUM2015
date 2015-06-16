@@ -198,7 +198,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\UCOW.C"
+					RelativePath=".\UMODEL.C"
 					>
 				</File>
 				<File
@@ -252,11 +252,27 @@
 							>
 						</File>
 						<File
+							RelativePath=".\MTLLIB.C"
+							>
+						</File>
+						<File
 							RelativePath=".\PRIM.C"
 							>
 						</File>
 					</Filter>
 				</Filter>
+			</Filter>
+			<Filter
+				Name="Load Image"
+				>
+				<File
+					RelativePath=".\IMAGE.C"
+					>
+				</File>
+				<File
+					RelativePath=".\IMAGE.H"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter

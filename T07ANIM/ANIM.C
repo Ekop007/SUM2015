@@ -343,18 +343,12 @@ VOID AK1_AnimFlipFullScreen( VOID )
     HMONITOR hmon;
     MONITORINFOEX moninfo;
 
-    /* сохраняем старый размер окна */
     GetWindowRect(AK1_Anim.hWnd, &SaveRC);
 
-    /* определяем в каком мониторе находится окно */
     hmon = MonitorFromWindow(AK1_Anim.hWnd, MONITOR_DEFAULTTONEAREST);
 
-    /* получаем информацию для монитора */
     moninfo.cbSize = sizeof(moninfo);
     GetMonitorInfo(hmon, (MONITORINFO *)&moninfo);
-
-    /* переходим в полный экран */
-    rc = moninfo.rcMonitor;
 
     AdjustWindowRect(&rc, GetWindowLong(AK1_Anim.hWnd, GWL_STYLE), FALSE);
 

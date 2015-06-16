@@ -316,9 +316,10 @@ __inline VEC NormVec( VEC N, MATR M )
   return N1;
 }
 
-__inline MATR MatrRotateZ( MATR M, FLT AngleInDegree )
+__inline MATR MatrRotateZ( FLT AngleInDegree )
 {
   FLT sine, cosine;
+  MATR M = MatrIdentity();
   /* Multiplyer degree to radian constant */
    long double MultiplierDegree2Radian = DEGREE2RADIANL1;
   __asm {
@@ -376,9 +377,9 @@ __inline MATR MatrRotateX( FLT AngleInDegree )
     fstp cosine /* cos -> cosine */
     fstp sine   /* sin -> sine */
   }
-  M.A[1][1] =  M.A[0][0] = cosine;
-  M.A[0][1] = sine;
-  M.A[1][0] = -sine;
+  M.A[1][1] =  M.A[2][2] = cosine;
+  M.A[2][1] = sine;
+  M.A[1][2] = -sine;
   return M;
 } /* End of 'VecRotateX' function */
 
