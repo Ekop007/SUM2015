@@ -113,7 +113,9 @@ BOOL AK1_AnimInit( HWND hWnd )
   AK1_Anim.IsPause = FALSE;
   FrameCounter = 0;
   
-  AK1_RndProg = AK1_ShaderLoad("TEST"); /* загрузка шейдера */
+  /* загрузка шейдерjd */
+  AK1_RndProg = AK1_ShaderLoad("TEST");
+  AK1_RndPlanet = AK1_ShaderLoad("PLANET");
   
   glEnable(GL_DEPTH_TEST);
   glClearColor(0.3, 0.5, 0.7, 1);
@@ -138,6 +140,8 @@ VOID AK1_AnimClose( VOID )
 
   AK1_ShaderFree(AK1_RndProg);
   AK1_RndProg = 0;
+  AK1_ShaderFree(AK1_RndPlanet);
+  AK1_RndPlanet = 0;
 
   wglMakeCurrent(NULL, NULL);
   wglDeleteContext(AK1_Anim.hGLRC);
@@ -289,7 +293,9 @@ VOID AK1_AnimRender( VOID )
     {
       time = 0;
       AK1_ShaderFree(AK1_RndProg);
+      AK1_ShaderFree(AK1_RndPlanet);
       AK1_RndProg = AK1_ShaderLoad("TEST");
+      AK1_RndPlanet = AK1_ShaderLoad("PLANET");
     }
     AK1_RndMatrWorld = MatrIdentity();
 

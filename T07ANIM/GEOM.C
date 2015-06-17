@@ -65,13 +65,22 @@ VOID AK1_GeomFree( ak1GEOM *G )
  *       ak1GEOM *G;
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ: Нет.
  */
-VOID AK1_GeomDraw( ak1GEOM *G )
+VOID AK1_GeomDraw( ak1GEOM *G, INT Sh )
 {
   INT i, loc;
-
+  UINT Unt;
+  if (Sh == 2)
+    Unt = AK1_RndPlanet;
+  else 
+    Unt = AK1_RndProg;
   /* посылаем количество частей */
-  glUseProgram(AK1_RndProg);
-  loc = glGetUniformLocation(AK1_RndProg, "TotalParts");
+  glUseProgram(Unt);
+  loc = glGetUniformLocation(Unt, "TotalParts");
+  if (loc != -1)
+    glUniform1f(loc, G->NumOfPrimitives);
+  glUseProgram(0);
+  glUseProgram(Unt);
+  loc = glGetUniformLocation(Unt, "TotalParts");
   if (loc != -1)
     glUniform1f(loc, G->NumOfPrimitives);
   glUseProgram(0);
@@ -81,12 +90,12 @@ VOID AK1_GeomDraw( ak1GEOM *G )
     if (AK1_MtlLib[G->Prims[i].MtlNo].Kt == 1)
     {
       /* посылаем номер текущей части */
-      glUseProgram(AK1_RndProg);
-      loc = glGetUniformLocation(AK1_RndProg, "PartNo");
+      glUseProgram(Unt);
+      loc = glGetUniformLocation(Unt, "PartNo");
       if (loc != -1)
         glUniform1f(loc, i);
       glUseProgram(0);
-      AK1_PrimDraw(&G->Prims[i]);
+      AK1_PrimDraw(&G->Prims[i], Sh);
     }
 
   /* рисуем прозрачные объекты */
@@ -94,12 +103,12 @@ VOID AK1_GeomDraw( ak1GEOM *G )
     if (AK1_MtlLib[G->Prims[i].MtlNo].Kt != 1)
     {
       /* посылаем номер текущей части */
-      glUseProgram(AK1_RndProg);
-      loc = glGetUniformLocation(AK1_RndProg, "PartNo");
+      glUseProgram(Unt);
+      loc = glGetUniformLocation(Unt, "PartNo");
       if (loc != -1)
         glUniform1f(loc, i);
       glUseProgram(0);
-      AK1_PrimDraw(&G->Prims[i]);
+      AK1_PrimDraw(&G->Prims[i], Sh);
     }
 } /* End of 'AK1_GeomDraw' function */
 
@@ -191,5 +200,6 @@ BOOL AK1_GeomLoad( ak1GEOM *G, CHAR *FileName )
   AK1_RndPrimMatrConvert = MatrIdentity();
   return TRUE;
 } /* End of 'AK1_GeomDraw' function */
+
 
 /* END OF 'GEOM.C' FILE */

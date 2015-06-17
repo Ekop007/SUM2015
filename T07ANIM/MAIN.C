@@ -80,6 +80,7 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
   /*** Добавление объектов ***/
   AK1_AnimAddUnit(AK1_UnitControlCreate());
   AK1_AnimAddUnit(AK1_UnitModelCreate());
+  AK1_AnimAddUnit(AK1_UnitPlanetCreate());
 
   /* Запуск цикла обработки сообщений */
   while (GetMessage(&msg, NULL, 0, 0))

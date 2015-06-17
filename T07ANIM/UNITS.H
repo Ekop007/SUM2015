@@ -9,17 +9,15 @@
 
 #include "def.h"
 
+extern MATR AK1_ModelMatr;
+extern MATR AK1_PlanetMatr;
 
-/* Функция создания объекта анимации "мяч".
- * АРГУМЕНТЫ: Нет.
- * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ:
- *   (ak1UNIT *) указатель на созданный объект анимации.
- */
-ak1UNIT * AK1_UnitBallCreate( VOID );
 
 ak1UNIT * AK1_UnitModelCreate( VOID );
 
 ak1UNIT * AK1_UnitControlCreate( VOID );
+
+ak1UNIT * AK1_UnitPlanetCreate( VOID );
 
 #endif /* __UNITS_H_ */
 

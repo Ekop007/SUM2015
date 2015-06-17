@@ -18,11 +18,13 @@ typedef struct tagak1UNIT_MODEL
 {
   AK1_UNIT_BASE_FIELDS;
 
-  ak1GEOM Model; 
   ak1GEOM Geom; 
   ak1PRIM Pr;
-  INT TextId;     /* Модель корова */
+  INT TextId;
+  INT Sh;
 } ak1UNIT_MODEL;
+
+MATR AK1_ModelMatr = AK1_UNIT_MATR;
 
 /* Функция инициализации объекта анимации.
  * АРГУМЕНТЫ:
@@ -35,32 +37,19 @@ typedef struct tagak1UNIT_MODEL
 
 static VOID AK1_AnimModelInit( ak1UNIT_MODEL *Uni, ak1ANIM *Ani )
 {
-  ak1VERTEX V[]= 
-  {
-    {{0, 0, 0}, {0, 0}, {0, 0, 1}, {1, 1, 1, 1}},
-    {{1, 0, 0}, {5, 0}, {0, 0, 1}, {1, 0, 1, 1}},
-    {{0, 1, 0}, {0, 5}, {0, 0, 1}, {1, 1, 0, 1}},
-    {{1, 1, 0}, {5, 5}, {0, 0, 1}, {1, 1, 0, 1}},
-  };
-  INT I[] = {0, 1, 2, 2, 1, 3};
-  BYTE txt[2][2][3] =
-  {
-    {{255, 255, 255}, {0, 0, 0}},
-    {{0, 0, 0}, {255, 255, 255}}
-  };
-
   Ani->AngleY = 0;
   Ani->AngleX = 0;
   Ani->PosX = 0;
   Ani->PosY = 0;
+  Uni->Sh = 1;
  // Uni->TextId = AK1_TextureLoad("M.BMP");
 
 //  AK1_PrimCreate(&Uni->Pr, AK1_PRIM_TRIMESH, 4, 6, V, I);
 
 //  AK1_RndPrimMatrConvert = MatrMulMatr(MatrScale(5, 5, 5), MatrRotateX(-90));
   
-  AK1_RndPrimMatrConvert = MatrMulMatr(MatrScale(0.010, 0.010, 0.010), MatrRotateY(0));
-  AK1_GeomLoad(&Uni->Geom, "E:\\SPR02\\Helic\\RAS.G3D");
+  AK1_RndPrimMatrConvert = MatrMulMatr(MatrMulMatr(MatrTranslate(0, 0, 0), MatrScale(0.020, 0.020, 0.020)), MatrRotateY(90));
+  AK1_GeomLoad(&Uni->Geom, "E:\\SPR02\\Falcon\\FIh48\\UFGC.G3D");
 } /* End of 'ak1_AnimModelInit' function */
 
 /* Функция деинициализации объекта анимации.
@@ -73,7 +62,6 @@ static VOID AK1_AnimModelInit( ak1UNIT_MODEL *Uni, ak1ANIM *Ani )
  */
 static VOID AK1_AnimModelClose( ak1UNIT_MODEL *Uni, ak1ANIM *Ani )
 {
-  AK1_GeomFree(&Uni->Model);
   AK1_GeomFree(&Uni->Geom);
   AK1_PrimFree(&Uni->Pr);
 } /* End of 'ak1_AnimModelClose' function */
@@ -90,26 +78,10 @@ static VOID AK1_AnimModelResponse( ak1UNIT_MODEL *Uni, ak1ANIM *Ani )
 {
   if (Ani->Keys[VK_ESCAPE])
     AK1_AnimDoExit();
-  if (Ani->JX > 0.00001)
-  {
-    Ani->PosX += 5 * (Ani->JX + 0.00002) * !Ani->IsPause;
-    Ani->AngleX = 20 * (Ani->JX + 0.00002) * !Ani->IsPause;
-  }
-  if (Ani->JX < -0.00003)
-  {
-    Ani->PosX += 5 * (Ani->JX + 0.00002) * !Ani->IsPause;
-    Ani->AngleX = 20 * (Ani->JX + 0.00002) * !Ani->IsPause;
-  }
-  if (Ani->JY > 0.00001)
-  {
-    Ani->PosY += 5 * (Ani->JY + 0.00002) * !Ani->IsPause;
-    Ani->AngleY = 20 * (Ani->JY + 0.00002) * !Ani->IsPause;
-  }
-  if (Ani->JY < -0.00003)
-  {
-    Ani->PosY += 5 * (Ani->JY + 0.00002) * !Ani->IsPause;
-    Ani->AngleY = 20 * (Ani->JY + 0.00002) * !Ani->IsPause;
-  }
+  Ani->PosX += 5 * (Ani->JX + 0.00002) * !Ani->IsPause;
+  Ani->AngleX = 8 * (Ani->JX + 0.00002) * !Ani->IsPause;
+  Ani->PosY += 5 * (Ani->JY + 0.00002) * !Ani->IsPause;
+  Ani->AngleY = 8 * (Ani->JY + 0.00002) * !Ani->IsPause;
  /* if (Ani->JZ < -0.00002)
     Ani->AngleX += 20 * Ani->JZ * !Ani->IsPause;
   if (Ani->JZ > 0.0)
@@ -137,7 +109,7 @@ static VOID AK1_AnimModelResponse( ak1UNIT_MODEL *Uni, ak1ANIM *Ani )
 static VOID AK1_AnimModelRender( ak1UNIT_MODEL *Uni, ak1ANIM *Ani )
 {
  // INT i, j;
-  AK1_RndMatrView = MatrView(VecSet(0, 2, 8),
+  AK1_RndMatrView = MatrView(VecSet(0, 1, -15),
                              VecSet(0, 0, 0),
                              VecSet(0, 1, 0));
 
@@ -147,17 +119,17 @@ static VOID AK1_AnimModelRender( ak1UNIT_MODEL *Uni, ak1ANIM *Ani )
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   glEnable(GL_DEPTH_TEST);
 
-  AK1_RndMatrWorld =
+  AK1_ModelMatr =
     MatrMulMatr(MatrMulMatr(MatrMulMatr(
-      MatrRotateY(Ani->AngleX),
+      MatrTranslate(4.5, -3, 0),
+      MatrRotateY(Ani->AngleX)),
       MatrRotateX(Ani->AngleY)),
-      MatrTranslate(/*Ani->PosX, -Ani->PosY*/ 0, 0, 0)),
-      MatrScale(0.1, 0.1, 0.1));
-  AK1_GeomDraw(&Uni->Geom);
+      MatrScale(1, 1, 1));
+  AK1_GeomDraw(&Uni->Geom, Uni->Sh);
 
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, Uni->TextId);
-  AK1_PrimDraw(&Uni->Pr);
+  AK1_PrimDraw(&Uni->Pr, Uni->Sh);
 } /* End of 'ak1_AnimModelRender' function */
 
 /* Функция создания объекта анимации "мяч".

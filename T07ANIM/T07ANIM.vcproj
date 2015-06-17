@@ -190,10 +190,6 @@
 				Name="Units"
 				>
 				<File
-					RelativePath=".\UBALL.C"
-					>
-				</File>
-				<File
 					RelativePath=".\UCONTRL.C"
 					>
 				</File>
@@ -203,6 +199,10 @@
 				</File>
 				<File
 					RelativePath=".\UNITS.H"
+					>
+				</File>
+				<File
+					RelativePath=".\UPLANETS.C"
 					>
 				</File>
 			</Filter>

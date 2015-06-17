@@ -7,6 +7,7 @@
 #ifndef __RENDER_H_
 #define __RENDER_H_
 
+#include <stdio.h>
 #include "vec.h"
  
 #define GLEW_STATIC
@@ -31,14 +32,16 @@ extern MATR
   AK1_RndMatrProj;
 
 extern MATR AK1_RndMatrWorldViewProj;
+extern MATR AK1_ModelMatr;
 
 /* Параметры проецирования */
 extern DBL
   AK1_RndWp, AK1_RndHp,    /* размеры обрасти проецирования */
   AK1_RndProjDist;         /* расстояние до плоскости проекции */
 
-/* Шейдер по умолчанию */
-extern UINT AK1_RndProg;
+/* Шейдера */
+extern UINT AK1_RndProg, AK1_RndPlanet;
+
 
 /* Матрица изменения примитива при создании */
 extern MATR AK1_RndPrimMatrConvert;
@@ -192,7 +195,7 @@ VOID AK1_PrimFree( ak1PRIM *Prim );
  *       ak1PRIM *Prim;
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ: Нет.
  */
-VOID AK1_PrimDraw( ak1PRIM *Prim );
+VOID AK1_PrimDraw( ak1PRIM *Prim, INT Sh );
 
 /* Функция создания примитива плоскость.
  * АРГУМЕНТЫ:
@@ -233,6 +236,9 @@ BOOL AK1_PrimCreateSphere( ak1PRIM *Prim, VEC C, FLT R, INT N, INT M );
  */
 BOOL AK1_PrimLoad( ak1PRIM *GObj, CHAR *FileName );
 
+BOOL AK1_PrimCreatePlanet( ak1PRIM *Prim, VEC C, FLT R, FLT Scale, CHAR *FileName );
+
+
 /***
  * Работа с геометрическими объектами
  ***/
@@ -269,7 +275,7 @@ VOID AK1_GeomFree( ak1GEOM *G );
  *       ak1GEOM *G;
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ: Нет.
  */
-VOID AK1_GeomDraw( ak1GEOM *G );
+VOID AK1_GeomDraw( ak1GEOM *G, INT Sh );
 
 /* Функция загрузки геометрического объекта из G3D файла.
  * АРГУМЕНТЫ:

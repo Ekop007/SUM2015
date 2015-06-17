@@ -11,6 +11,7 @@ layout(location = 3) in vec4 InColor;
 
 // глобальные переменные
 uniform mat4 MatrWorld;
+uniform mat4 ModelMatr;
 uniform mat4 MatrView;
 uniform mat4 MatrProj;
 uniform mat4 MatrWVP;
@@ -27,7 +28,7 @@ out vec2 DrawTexCoord;
 
 void main( void )
 {
-  gl_Position = MatrWVP * vec4(InPosition, 1);
+  gl_Position = MatrWVP * ModelMatr * vec4(InPosition, 1);
   DrawNormal = mat3(MatrWInverse) * InNormal;
   DrawPosition = vec3(MatrWorld * vec4(InPosition, 1));
   DrawColor = InColor;

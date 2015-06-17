@@ -78,8 +78,8 @@ vec4 Shade( vec3 P, vec3 N )
 
 void main( void )
 {
- /* if (PartNo)
-    discard;    */
+ /*if (PartNo == 11)
+    discard;*/   
   OutColor = DrawColor * Shade(DrawPosition.xyz, DrawNormal);
 }
 
