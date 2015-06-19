@@ -40,7 +40,7 @@ extern DBL
   AK1_RndProjDist;         /* расстояние до плоскости проекции */
 
 /* Шейдера */
-extern UINT AK1_RndProg, AK1_RndPlanet;
+extern UINT AK1_RndProg;
 
 
 /* Матрица изменения примитива при создании */
@@ -195,7 +195,7 @@ VOID AK1_PrimFree( ak1PRIM *Prim );
  *       ak1PRIM *Prim;
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ: Нет.
  */
-VOID AK1_PrimDraw( ak1PRIM *Prim, INT Sh );
+VOID AK1_PrimDraw( ak1PRIM *Prim, UINT Unt );
 
 /* Функция создания примитива плоскость.
  * АРГУМЕНТЫ:
@@ -275,7 +275,7 @@ VOID AK1_GeomFree( ak1GEOM *G );
  *       ak1GEOM *G;
  * ВОЗВРАЩАЕМОЕ ЗНАЧЕНИЕ: Нет.
  */
-VOID AK1_GeomDraw( ak1GEOM *G, INT Sh );
+VOID AK1_GeomDraw( ak1GEOM *G, UINT Unt );
 
 /* Функция загрузки геометрического объекта из G3D файла.
  * АРГУМЕНТЫ:

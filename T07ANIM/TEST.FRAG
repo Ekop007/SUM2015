@@ -1,4 +1,4 @@
-/* Filename: TEST.FRAG: */
+/* Filename: PLANET.FRAG: */
 
 // версия языка шейдера
 #version 330
@@ -8,8 +8,13 @@ uniform float Time;
 uniform float PartNo;
 uniform float TotalParts;
 
+uniform mat4 MatrWorld;
 uniform mat4 MatrView;
-
+uniform mat4 MatrProj;
+uniform mat4 MatrWVP;
+uniform mat4 MatrWV;
+uniform mat4 MatrWVInverse;
+uniform mat4 MatrWInverse;
 // выходные параметры - цвет рисования
 out vec4 OutColor;
 
@@ -36,11 +41,18 @@ vec4 Shade( vec3 P, vec3 N )
 {
   float a = 1;
   vec3 color = vec3(0, 0, 0);
-  vec3 L = normalize(vec3(1, 1, 1));
-  vec3 V = -vec3(-MatrView[3][0], -MatrView[3][1], -MatrView[3][2]);
+  vec3 L[3], LC[3];
+  vec3 V = normalize(vec3(MatrWVInverse * vec4(0, 0, 0, 1)) - P);
 
-  // разворачиваем нормаль, если смотрим в "тыл" треугольнику
-  //N = faceforward(N, V, N);
+  L[0] = normalize(vec3(0, -100, 0));
+ /* L[1] = normalize(vec3(0, 15, sin(Time * 1.2 + 3) * 8) - P);
+  L[2] = normalize(vec3(sin(Time * 2.4 + 3) * 5, 15, sin(Time * 1.2 + 3) * 8) - P);
+          */
+  LC[0] = vec3(1, 1, 1) * 0.85;
+ // LC[1] = vec3(1, 1, 1) * 0.930;
+  //LC[2] = vec3(1, 1, 1) * 0.930;
+    // разворачиваем нормаль, если смотрим в "тыл" треугольнику
+  N = faceforward(N, V, N);
   N = normalize(N);
 
   /*
@@ -49,30 +61,32 @@ vec4 Shade( vec3 P, vec3 N )
     Kd = vec3(0.6, 0.6, 0.6),
     Ks = vec3(0.5, 0.5, 0.5);
   float Kp = 1;
-  */
+    */
 
   // рассеянный (ambient)
   color = Ka;
-
-  // диффузное отражение
-  float nl = dot(N, L); 
-  if (nl > 0)
+  vec3 R = reflect(V, N);
+  for (int i = 0; i < 1; i++)
   {
-    if (IsTextureUse > 0)
+    // диффузное отражение
+    float nl = dot(N, L[i]); 
+    if (nl > 0)
     {
-      vec4 tc = texture2D(DrawTexture, DrawTexCoord);
-      a = tc.a;
-      color += Kd * tc.rgb * nl;
+      if (IsTextureUse > 0)
+      {
+        vec4 tc = texture2D(DrawTexture, vec2(1, -1) * DrawTexCoord);
+        a = tc.a;
+        color += LC[i] * Kd * tc.rgb * nl;
+      }
+      else
+        color += LC[i] * Kd * nl;
     }
-    else
-      color += Kd * nl;
-  }
 
   // зеркальное отражение
-  vec3 R = reflect(V, N);
-  float rl = dot(R, L); 
-  if (rl > 0)
-    ;//color += Ks * pow(rl, Kp);
+    float rl = dot(R, L[i]); 
+    if (rl > 0)
+      color += LC[i] * Ks * pow(rl, Kp);
+  }
   return vec4(0.6 * color, (Kt * a));
 }
 
@@ -82,5 +96,3 @@ void main( void )
     discard;*/   
   OutColor = DrawColor * Shade(DrawPosition.xyz, DrawNormal);
 }
-
-

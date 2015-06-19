@@ -65,13 +65,10 @@ VOID AK1_GeomFree( ak1GEOM *G )
  *       ak1GEOM *G;
  * ÂÎÇÂÐÀÙÀÅÌÎÅ ÇÍÀ×ÅÍÈÅ: Íåò.
  */
-VOID AK1_GeomDraw( ak1GEOM *G, INT Sh )
+VOID AK1_GeomDraw( ak1GEOM *G, UINT Unt )
 {
   INT i, loc;
-  UINT Unt;
-  if (Sh == 2)
-    Unt = AK1_RndPlanet;
-  else 
+  if (Unt == 0)
     Unt = AK1_RndProg;
   /* ïîñûëàåì êîëè÷åñòâî ÷àñòåé */
   glUseProgram(Unt);
@@ -95,7 +92,7 @@ VOID AK1_GeomDraw( ak1GEOM *G, INT Sh )
       if (loc != -1)
         glUniform1f(loc, i);
       glUseProgram(0);
-      AK1_PrimDraw(&G->Prims[i], Sh);
+      AK1_PrimDraw(&G->Prims[i], Unt);
     }
 
   /* ðèñóåì ïðîçðà÷íûå îáúåêòû */
@@ -108,7 +105,7 @@ VOID AK1_GeomDraw( ak1GEOM *G, INT Sh )
       if (loc != -1)
         glUniform1f(loc, i);
       glUseProgram(0);
-      AK1_PrimDraw(&G->Prims[i], Sh);
+      AK1_PrimDraw(&G->Prims[i], Unt);
     }
 } /* End of 'AK1_GeomDraw' function */
 

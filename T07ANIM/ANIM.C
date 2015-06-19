@@ -115,7 +115,6 @@ BOOL AK1_AnimInit( HWND hWnd )
   
   /* загрузка шейдерjd */
   AK1_RndProg = AK1_ShaderLoad("TEST");
-  AK1_RndPlanet = AK1_ShaderLoad("PLANET");
   
   glEnable(GL_DEPTH_TEST);
   glClearColor(0.3, 0.5, 0.7, 1);
@@ -140,8 +139,6 @@ VOID AK1_AnimClose( VOID )
 
   AK1_ShaderFree(AK1_RndProg);
   AK1_RndProg = 0;
-  AK1_ShaderFree(AK1_RndPlanet);
-  AK1_RndPlanet = 0;
 
   wglMakeCurrent(NULL, NULL);
   wglDeleteContext(AK1_Anim.hGLRC);
@@ -293,9 +290,7 @@ VOID AK1_AnimRender( VOID )
     {
       time = 0;
       AK1_ShaderFree(AK1_RndProg);
-      AK1_ShaderFree(AK1_RndPlanet);
       AK1_RndProg = AK1_ShaderLoad("TEST");
-      AK1_RndPlanet = AK1_ShaderLoad("PLANET");
     }
     AK1_RndMatrWorld = MatrIdentity();
 
@@ -342,6 +337,10 @@ VOID AK1_AnimFlipFullScreen( VOID )
 {
   static BOOL IsFullScreen = FALSE; /* текущий режим */
   static RECT SaveRC;               /* сохраненный размер */
+  static NTime = 0;
+
+  if(AK1_Anim.GlobalTime - NTime < 2)
+    return;
 
   if (!IsFullScreen)
   {
@@ -349,12 +348,18 @@ VOID AK1_AnimFlipFullScreen( VOID )
     HMONITOR hmon;
     MONITORINFOEX moninfo;
 
+    /* сохраняем старый размер окна */
     GetWindowRect(AK1_Anim.hWnd, &SaveRC);
 
+    /* определяем в каком мониторе находится окно */
     hmon = MonitorFromWindow(AK1_Anim.hWnd, MONITOR_DEFAULTTONEAREST);
 
+    /* получаем информацию для монитора */
     moninfo.cbSize = sizeof(moninfo);
     GetMonitorInfo(hmon, (MONITORINFO *)&moninfo);
+
+    /* переходим в полный экран */
+    rc = moninfo.rcMonitor;
 
     AdjustWindowRect(&rc, GetWindowLong(AK1_Anim.hWnd, GWL_STYLE), FALSE);
 
@@ -373,6 +378,7 @@ VOID AK1_AnimFlipFullScreen( VOID )
       SWP_NOOWNERZORDER);
     IsFullScreen = FALSE;
   }
+  NTime = AK1_Anim.GlobalTime;
 } /* End of 'AK1_AnimFlipFullScreen' function */
 
 /* Функция выхода из анимации.

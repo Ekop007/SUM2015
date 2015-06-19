@@ -22,6 +22,9 @@ typedef struct tagak1UNIT_MODEL
   ak1PRIM Pr;
   INT TextId;
   INT Sh;
+  VEC CPos, Pos, At;           /* Позиция юнита, камеры */
+  FLT Head, Omega, V;
+  UINT ProgId;
 } ak1UNIT_MODEL;
 
 MATR AK1_ModelMatr = AK1_UNIT_MATR;
@@ -37,11 +40,7 @@ MATR AK1_ModelMatr = AK1_UNIT_MATR;
 
 static VOID AK1_AnimModelInit( ak1UNIT_MODEL *Uni, ak1ANIM *Ani )
 {
-  Ani->AngleY = 0;
-  Ani->AngleX = 0;
-  Ani->PosX = 0;
-  Ani->PosY = 0;
-  Uni->Sh = 1;
+  Uni->ProgId = 1;
  // Uni->TextId = AK1_TextureLoad("M.BMP");
 
 //  AK1_PrimCreate(&Uni->Pr, AK1_PRIM_TRIMESH, 4, 6, V, I);
@@ -49,7 +48,13 @@ static VOID AK1_AnimModelInit( ak1UNIT_MODEL *Uni, ak1ANIM *Ani )
 //  AK1_RndPrimMatrConvert = MatrMulMatr(MatrScale(5, 5, 5), MatrRotateX(-90));
   
   AK1_RndPrimMatrConvert = MatrMulMatr(MatrMulMatr(MatrTranslate(0, 0, 0), MatrScale(0.020, 0.020, 0.020)), MatrRotateY(90));
-  AK1_GeomLoad(&Uni->Geom, "E:\\SPR02\\Falcon\\FIh48\\UFGC.G3D");
+  AK1_GeomLoad(&Uni->Geom, "E:SPR02\\Falcon\\FIh48\\UFGC.G3D");
+  Uni->ProgId = 0;
+  Uni->Pos = VecSet(0, 0, 0);
+  Uni->CPos = VecSet(0, 8, 40);
+  Uni->V = 0;
+  Uni->Head = 0;
+  Uni->Omega = 0;
 } /* End of 'ak1_AnimModelInit' function */
 
 /* Функция деинициализации объекта анимации.
@@ -76,26 +81,34 @@ static VOID AK1_AnimModelClose( ak1UNIT_MODEL *Uni, ak1ANIM *Ani )
  */
 static VOID AK1_AnimModelResponse( ak1UNIT_MODEL *Uni, ak1ANIM *Ani )
 {
+  VEC Dir, Move;
   if (Ani->Keys[VK_ESCAPE])
     AK1_AnimDoExit();
-  Ani->PosX += 5 * (Ani->JX + 0.00002) * !Ani->IsPause;
-  Ani->AngleX = 8 * (Ani->JX + 0.00002) * !Ani->IsPause;
-  Ani->PosY += 5 * (Ani->JY + 0.00002) * !Ani->IsPause;
-  Ani->AngleY = 8 * (Ani->JY + 0.00002) * !Ani->IsPause;
- /* if (Ani->JZ < -0.00002)
-    Ani->AngleX += 20 * Ani->JZ * !Ani->IsPause;
-  if (Ani->JZ > 0.0)
-    Ani->AngleX += 20 * Ani->JZ * !Ani->IsPause;
-  if (Ani->JR < -0.00002)
-    Ani->AngleY += 20 * Ani->JR * !Ani->IsPause;
-  if (Ani->JR > 0.00002)
-    Ani->AngleY += 20 * Ani->JR * !Ani->IsPause; */
-  if (Ani->JButsClick[9])  
+  if (Ani->JPOV == 1)
     AK1_AnimFlipFullScreen();
   if (Ani->JButsClick[4])
     AK1_AnimSetPause(!Ani->IsPause);
   if (Ani->JButs[5])
     AK1_AnimDoExit();
+  Uni->Head += 300 * Ani->JR * Ani->DeltaTime;
+  Uni->Omega += 300 * Ani->JZ * Ani->DeltaTime;
+  Dir = VecMulMatr(VecSet(0, 0, 1), MatrMulMatr(MatrRotateY(Uni->Head), MatrRotateX(Uni->Omega)));
+  Uni->V += -3 * 30 * Ani->JY * Ani->DeltaTime;
+  Uni->V *= max(1 - Ani->GlobalDeltaTime, 0.01);
+  Uni->Pos = VecAddVec(Uni->Pos, VecMulNum(Dir, Uni->V * Ani->DeltaTime));
+  Uni->Pos = VecAddVec(Uni->Pos, VecMulNum(VecMulMatr(Dir, MatrRotateY(-90)), 30 * Ani->JX * Ani->DeltaTime));
+//  Uni->Pos.Y += 300 * (Ani->JButs[1] - Ani->JButs[2]) * Ani->DeltaTime;
+
+  Uni->At = VecSubVec(Uni->Pos, VecMulNum(Dir, 12));
+  Uni->At.Y += 4;
+  Uni->At.Z -= 10;
+
+  Move = VecSubVec(Uni->At, Uni->CPos);
+  Uni->CPos = VecAddVec(Uni->CPos, VecMulNum(Move, Ani->GlobalDeltaTime));
+  
+  AK1_RndMatrView = MatrView(Uni->CPos,
+                             Uni->Pos,
+                             VecSet(0, 1, 0));
 } /* End of 'ak1_AnimModelResponse' function */
 
 /* Функция построения объекта анимации.
@@ -109,9 +122,6 @@ static VOID AK1_AnimModelResponse( ak1UNIT_MODEL *Uni, ak1ANIM *Ani )
 static VOID AK1_AnimModelRender( ak1UNIT_MODEL *Uni, ak1ANIM *Ani )
 {
  // INT i, j;
-  AK1_RndMatrView = MatrView(VecSet(0, 1, -15),
-                             VecSet(0, 0, 0),
-                             VecSet(0, 1, 0));
 
   if (Ani->KeysClick['W'])
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -119,17 +129,19 @@ static VOID AK1_AnimModelRender( ak1UNIT_MODEL *Uni, ak1ANIM *Ani )
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   glEnable(GL_DEPTH_TEST);
 
+  AK1_RndMatrWorld = MatrIdentity();
   AK1_ModelMatr =
-    MatrMulMatr(MatrMulMatr(MatrMulMatr(
+    MatrMulMatr(MatrMulMatr(MatrMulMatr(MatrMulMatr(
       MatrTranslate(4.5, -3, 0),
-      MatrRotateY(Ani->AngleX)),
-      MatrRotateX(Ani->AngleY)),
-      MatrScale(1, 1, 1));
-  AK1_GeomDraw(&Uni->Geom, Uni->Sh);
+      MatrRotateY(Uni->Head)),
+      MatrRotateX(Uni->Omega)),
+      MatrTranslate(Uni->Pos.X, Uni->Pos.Y, Uni->Pos.Z)),
+      MatrScale(1, 1, 1)); 
+  AK1_GeomDraw(&Uni->Geom, Uni->ProgId);
 
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, Uni->TextId);
-  AK1_PrimDraw(&Uni->Pr, Uni->Sh);
+  AK1_PrimDraw(&Uni->Pr, Uni->ProgId);
 } /* End of 'ak1_AnimModelRender' function */
 
 /* Функция создания объекта анимации "мяч".
