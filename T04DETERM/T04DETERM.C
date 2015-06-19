@@ -79,7 +79,7 @@ void main( void )
 {
   int i, j;
   FILE *F;
-  F = fopen("Output.txt", "r");
+  F = fopen("m1.txt", "r");
   ScanFromFile(F);
   for(i = 0; i < N; i++)
   {
