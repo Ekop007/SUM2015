@@ -26,11 +26,20 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,
  *   0 - при успехе.
  */
 
-void Eye( HDC hDC, int x, int y, int r, int r1, int h, int w1, int w )
+void Eye( HDC hDC, int x, int y, int r, int r1, int h, int w )
 {
-  INT x1, k, y1, l;
-  if (x1 < w / 2)
-    x1 = 2 * x / w;  
+  INT x1, y1, l = sqrt((w - x) * (w - x) + (h - y) * (h - y));
+  if ( l > r - r1 )
+  {
+    x1 = w - (w - x) * (r - r1) / l;
+    y1 = h - (h - y) * (r - r1) / l;
+  }
+  else
+  {
+    x1 = x;
+    y1 = y;
+  }
+  Ellipse(hDC, x1 - r1, y1 - r1, x1 + r1 , y1 + r1);
 }
 
 INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
@@ -127,8 +136,10 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,
     GetCursorPos(&pt);
     ScreenToClient(hWnd, &pt);
     r1 = r / 6;
-    Eye(hDC, pt.x, pt.y, r, r1, h / 2, w / 4, w);
-    Eye(hDC, pt.x, pt.y, r, r1, h / 2, 3 * w / 4, w);
+    SetDCBrushColor(hDC, RGB(0, 0, 0));
+    SelectObject(hDC, GetStockObject(DC_BRUSH));
+    Eye(hDC, pt.x, pt.y, r, r1, h / 2, w / 4);
+    Eye(hDC, pt.x, pt.y, r, r1, h / 2, 3 * w / 4);
     ReleaseDC(hWnd, hDC);
     return 0;
   case WM_DESTROY:
