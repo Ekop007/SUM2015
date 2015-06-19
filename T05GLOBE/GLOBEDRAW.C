@@ -6,8 +6,8 @@
 #include "GLOBE.H"
 #include "IMAGE.H"
 
-#define N 400
-#define M 800
+#define N 200
+#define M 400
 
 VEC Grid[N][M];
 BYTE *Pic;
