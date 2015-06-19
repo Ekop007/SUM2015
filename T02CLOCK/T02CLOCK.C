@@ -112,7 +112,7 @@ VOID DrawHand( HDC hDC, INT Xc, INT Yc, INT L, INT W, DOUBLE Angle)
   FLOAT si = sin(Angle), co = cos(Angle);
   POINT pnts[4] = 
   {
-    {W, -W}, {0, 0}, {0, L}, {W, W}
+    {-W, 0}, {0, L}, {W, 0}, {0, -W}
   }, pntdraw[sizeof(pnts) / sizeof(pnts[0])];
   for(i = 0; i < sizeof(pnts) / sizeof(pnts[0]); i++)
   {
